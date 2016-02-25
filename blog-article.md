@@ -53,9 +53,9 @@ model.clusterCenters.zipWithIndex.foreach { case (center, idx) =>
 
 We currently have implemented the fundamental methods: train and predict.  Future proposed work includes the following jiras:
 
-* **[[SPARK-11664](https://issues.apache.org/jira/browse/SPARK-11664)] Add methods to get bisecting k-means cluster structure:** To extract the result dendrogram() to visualize the denogram to confirm the reuslts.
-* **[[SPARK-8459](https://issues.apache.org/jira/browse/SPARK-8459)] Add import/export to spark.mllib bisecting k-means** 
-* **[[SPARK-11665](https://issues.apache.org/jira/browse/SPARK-11665)] Support other distance metrics for bisecting k-means:** Working to support various distance metrics (cosine distance, Tanimoto distance) to calculate a distance between a cluster center and each input point as we currently only support Euclidean distance.
+* [[SPARK-11664](https://issues.apache.org/jira/browse/SPARK-11664)] **Add methods to get bisecting k-means cluster structure:** To extract the result dendrogram() to visualize the denogram to confirm the reuslts.
+* [[SPARK-8459](https://issues.apache.org/jira/browse/SPARK-8459)] **Add import/export to spark.mllib bisecting k-means** 
+* [[SPARK-11665](https://issues.apache.org/jira/browse/SPARK-11665)] **Support other distance metrics for bisecting k-means:** Working to support various distance metrics (cosine distance, Tanimoto distance) to calculate a distance between a cluster center and each input point as we currently only support Euclidean distance.
 
 
 
