@@ -31,24 +31,46 @@ In general, the common hierarchical clustering does not require prespecifying th
 
 ```
 import org.apache.spark.mllib.clustering.BisectingKMeans
-val trainData: RDD[Vector] = ...
-val model = new BisectingKMeans()
-  .setK(k)
-    .setMaxIterations(maxIterations)
-      .setMinDivisibleClusterSize(minDivisibleClusterSize)
-        .setSeed(seed)
-val point: Vector = ...
-model.predict(point)
-val points: RDD[Vector] = ...
-model.predict(points)
+import org.apache.spark.mllib.linalg.{Vector, Vectors}
+
+// Loads and parses data
+def parse(line: String): Vector = Vectors.dense(line.split(" ").map(_.toDouble))
+val data = sc.textFile("data/mllib/kmeans_data.txt").map(parse).cache()
+
+// Clustering the data into 6 clusters by BisectingKMeans.
+val bkm = new BisectingKMeans().setK(6)
+val model = bkm.run(data)
+
+// Show the compute cost and the cluster centers
+println(s"Compute Cost: ${model.computeCost(data)}")
+model.clusterCenters.zipWithIndex.foreach { case (center, idx) =>
+  println(s"Cluster Center ${idx}: ${center}")
+}
 ```
+
 
 ## What's Next?
 
-We currently have only basic methods scuch as train and predict methods. It would be great to add method(s) to extract the result dendrogram([SPARK-11664](https://issues.apache.org/jira/browse/SPARK-11664)), since visualizing the dendrogram to confirm the result could be required. We should also support methods to import or export model for this algorithm([SPARK-8459](https://issues.apache.org/jira/browse/SPARK-8459)). In addition, we currently working to support various distance metrics (cosine distance, Tanimoto distance) to calculate a distance between a cluster center and each input point, though currently only Euclidean distance is supported([SPARK-11665](https://issues.apache.org/jira/browse/SPARK-11665)).
+We currently have implemented the fundamental methods: train and predict.  Future proposed work includes the following jiras:
+
+* **[[SPARK-11664](https://issues.apache.org/jira/browse/SPARK-11664)] Add methods to get bisecting k-means cluster structure:** To extract the result dendrogram() to visualize the denogram to confirm the reuslts.
+* **[[SPARK-8459](https://issues.apache.org/jira/browse/SPARK-8459)] Add import/export to spark.mllib bisecting k-means** 
+* **[[SPARK-11665](https://issues.apache.org/jira/browse/SPARK-11665)] Support other distance metrics for bisecting k-means:** Working to support various distance metrics (cosine distance, Tanimoto distance) to calculate a distance between a cluster center and each input point as we currently only support Euclidean distance.
+
+
 
 ## Acknowledgement
 
 The bisecting k-means in MLlib has been developed as a collaboration between Spark contributors.
 
 Xiangrui Meng and Yu Ishikawa made the inital implementation.  Jeremy Freeman, RJ Nowling and others have contributed to this work.
+
+## Addendum
+Some additional resources to learn more about Bisecting K-Means Clustering in Spark MLlib:
+
+* [A Comparison of Document Clustering Techniques](http://cs.fit.edu/~pkc/classes/ml-internet/papers/steinbach00tr.pdf) by Steinbach, Karypis, and Kumar
+* [Data Mining Clustering](http://wwwis.win.tue.nl/~tcalders/teaching/datamining09/slides/DM09-07-Clustering.pdf): A solid overview slide deck explaining clustering algorithms including partitioning and hierarchical clustering.
+* [Introduction to Information Retrieval: Hierarchical Clustering (Chapter 17)](http://nlp.stanford.edu/IR-book/pdf/17hier.pdf)
+* [Bisecting K-Means Class](https://spark.apache.org/docs/1.6.0/api/java/org/apache/spark/mllib/clustering/BisectingKMeans.html) (Apache Spark Documentation)
+* [MLlib Clustering ](http://spark.apache.org/docs/latest/mllib-clustering.html#bisecting-k-means) (Apache Spark documentation)
+
